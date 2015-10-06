@@ -1,0 +1,159 @@
+<?php
+/**
+ * Description of mail.php
+ * 
+ *  Currenty under construction.
+ *
+ * @author Brian Wilhite
+ */
+
+\ini_set('default_charset', 'UTF-8');
+
+//include('php/email/mixmail.class.php');
+include('php/model.class.php');
+
+ if(is_ajax()){ 
+    if($_SERVER["REQUEST_METHOD"] == "POST"){ 
+        
+        
+         function validate_array_keys($keys , $errors = []){
+            
+            // Get filtered values
+            $filters = [
+        
+                $name = [ 
+                    'filter' => filter_input(INPUT_POST , 'name', FILTER_CALLBACK),
+                    'options' => 'ucwords',
+                    'flags' =>   \FILTER_NULL_ON_FAILURE],
+            
+                $email = [
+                    'filter' => filter_input(INPUT_POST , 'name', \FILTER_SANITIZE_EMAIL),
+                    'flags'  =>  \FILTER_NULL_ON_FAILURE],
+          
+                $phone  = [
+                    'filter'  =>  filter_input(INPUT_POST , 'name', \FILTER_SANITIZE_NUMBER_INT),
+                    'options' =>  array('min_range' => 10, 'max_range' => 14),
+                    'flags'   =>  \FILTER_NULL_ON_FAILURE],
+           
+                $message = [
+                    'filter'  => filter_input(INPUT_POST , 'message', \FILTER_SANITIZE_STRING) ,
+                    'flags' =>   \FILTER_NULL_ON_FAILURE]
+            ];
+        
+            // catch empty fields
+            foreach($filters as $key => $value): 
+                if(!isset($key[$value])):
+                    $errors = $key .'is not valid. Please type a valid entry.';
+                    return false;
+                endif;
+            endforeach;
+            
+            /* Post values else display errors */
+            if(!validate_array_keys(INPUT_POST,
+                array('name', 'email', 'phone', 'message')
+                )):else:print $errors; // Note: After bugs are fixed, print errors in index
+            endif;
+            
+            /* Send email notification and insert user info to database */
+            if(empty($errors)):
+                _sendMail();
+            
+                /* Create obj */
+                /* Location: php/model.class.php */
+                $model = new Model();
+                $model->_post();
+            endif;
+        
+                return true;
+        }
+        
+        /* Get the values */ 
+        function array_values_recursive($array) {
+            $flat = array();
+
+            foreach ($array as $value) {
+                if (is_array($value)): $flat = array_merge($flat, array_values_recursive($value));
+                else: $flat[] = $value;
+                endif;
+            }
+            return $flat;
+        }
+        
+        /* Uses ajax request for front validation */
+        /* Location: js/contact_me.js */
+        function is_ajax(){
+            return isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest';
+        }
+        
+        /* Email with PHPmailer class */
+        /* Location: php/email/PHPmailer.class.php */
+        function _sendMail(){
+        
+           /* $info = array(                       
+               'data' =>                        
+                    array(
+                        'name'  => ,
+                        'email'  => , 
+                        'phone'  => ,
+                        'message' => 
+	       ), 
+	            'file' =>'reply.html'
+	       );
+
+            $mix = new mixing();
+            $mix->setMix($info);
+
+            echo nl2br($mix->mixer());
+                            
+            // send the message
+            /** This is where PHP mailer sends out the email file
+             * 
+             * $config = array(
+                    'host' 		=> , // Host
+                    'port' 		=> , // Port
+                    'encription' 	=> , // Encription Ex : TLS
+                    'auth' 		=> , // AUTH Ex : true in Boolean
+                    'username' 	=> , // Username
+                    'password'  	=> , // Password
+                    'frommail' 	=> bdwilhite@gmail.com ,  // From Mail 
+                    'fromname' 	=> Brian Wilhite , // From Name
+                    'replymail'	=> , // Reply Mail
+                    'replyname' 	=>   // Reply Name
+            );
+
+               $data = array(
+                    'data' => array(
+                        'tags' => 'Mixing Tags' // Tags to replace in a Template File
+            ), 
+                        'file'  => ,		// File Template
+                        'email' => , 		// Listing Mail comma separated
+                        'files' => ,		// URI to Files, array format array('file1.png', 'file2.doc')
+                        'asunto'=> 		Contact Form // Subject
+            );
+             * 
+            $mail = new mixMail($config);
+            $mail->send($data);
+             */
+                            
+    }
+   }   
+ }  
+/* End of file mail.php */
+/* Location: php/email/mail.php */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
