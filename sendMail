@@ -132,10 +132,10 @@ $mail->SMTPSecure = 'tls';
 $mail->SMTPAuth = true;
 
 //Username to use for SMTP authentication - use full email address for gmail
-$mail->Username = "bdwilhite@gmail.com";
+$mail->Username = "";
 
 //Password to use for SMTP authentication
-$mail->Password = "Dreamfullstack1";
+$mail->Password = "";
 
 //Set who the message is to be sent from
 //$mail->setFrom('from@example.com', 'First Last');
@@ -144,7 +144,7 @@ $mail->Password = "Dreamfullstack1";
 //$mail->addReplyTo('replyto@example.com', 'First Last');
 
 //Set who the message is to be sent to
-$mail->addAddress('bdwilhite@gmail.com', 'Hello Brian');
+$mail->addAddress('', '');
 
 //Set the subject line
 $mail->Subject = 'PHPMailer GMail SMTP test';
@@ -154,10 +154,10 @@ $mail->Subject = 'PHPMailer GMail SMTP test';
 //$mail->msgHTML(file_get_contents('contents.html'), dirname(__FILE__));
 
 $mail->isHTML(TRUE);
-$mail->Body = '<p>Ready To Rock</p>';
+$mail->Body = '';
 
 //Replace the plain text body with one created manually
-//$mail->AltBody = 'Ready To Rock!';
+//$mail->AltBody = '';
 
 //Attach an image file
 //$mail->addAttachment('images/phpmailer_mini.png');
