@@ -1,2 +1,2 @@
 # Send-Mail-After-Submit
-Currently under construction. Uses data filtering for validation and PHPmailer class to send email.  
+PHP class that uses filters for validation and PHPMailer to send out mail. 
