@@ -1,0 +1,202 @@
+<?php
+/**
+ * Description of mail.php
+ * @author Brian Wilhite
+ * 
+ * Using XAMPP with PHPMailer I set Header set Access-Control-Allow-Origin "*" inside the directory in the  
+ * Apache - config folder for the HTTP to work. 
+ * 
+ */
+require('PHPMailerAutoload.php');
+\ini_set('default_charset', 'UTF-8');
+
+//Create a new PHPMailer instance
+$mail = new PHPMailer;
+
+// Functions to filter user inputs
+function filterName($field){
+    // Sanitize user name
+    $field = filter_var(trim($field), FILTER_SANITIZE_STRING);
+    
+    // Validate user name
+    if(filter_var($field, FILTER_VALIDATE_REGEXP, array("options"=>array("regexp"=>"/^[a-zA-Z\s]+/")))){
+        return $field;
+    }else{
+        return FALSE;
+    }
+}    
+function filterEmail($field){
+    // Sanitize e-mail address
+    $field = filter_var(trim($field), FILTER_SANITIZE_EMAIL);
+    
+    // Validate e-mail address
+    if(filter_var($field, FILTER_VALIDATE_EMAIL)){
+        return $field;
+    }else{
+        return FALSE;
+    }
+}
+function filterString($field){
+    // Sanitize string
+    $field = filter_var(trim($field), FILTER_SANITIZE_STRING);
+    if(!empty($field)){
+        return $field;
+    }else{
+        return FALSE;
+    }
+}
+ 
+// Define variables and initialize with empty values
+$nameErr = $emailErr = $messageErr = "";
+$name = $email = $subject = $message = "";
+ 
+
+
+// Processing form data when form is submitted
+if($_SERVER["REQUEST_METHOD"] == "POST"){
+ 
+    // Validate user name
+    if(empty($_POST["contactName"])){
+        $nameErr = 'Please enter your name.';
+    }else{
+        $name = filterName($_POST["contactName"]);
+        if($name == FALSE){
+            $nameErr = 'Please enter a valid name.';
+        }
+    }
+    
+    // Validate email address
+    if(empty($_POST["contactEmail"])){
+        $emailErr = 'Please enter your email address.';     
+    }else{
+        $email = filterEmail($_POST["contactEmail"]);
+        if($email == FALSE){
+            $emailErr = 'Please enter a valid email address.';
+        }
+    }
+    
+    // Validate message subject
+    if(empty($_POST["contactSubject"])){
+        $subject = "";
+    }else{
+        $subject = filterString($_POST["contactSubject"]);
+    }
+    
+    // Validate user comment
+    if(empty($_POST["contactMessage"])){
+        $messageErr = 'Please enter your comment.';     
+    }else{
+        $message = filterString($_POST["contactMessage"]);
+        if($message == FALSE){
+            $messageErr = 'Please enter a valid comment.';
+        }
+    }
+    
+            
+  if(empty($nameErr) && empty($emailErr) && empty($messageErr)){ 
+      
+      
+    /* Create obj */
+    /* Location: php/model.class.php */
+     $model = new Model();
+     $model->_inputValues();
+    
+//SMTP needs accurate times, and the PHP time zone MUST be set
+//This should be done in your php.ini, but this is how to do it if you don't have access to that
+date_default_timezone_set('Etc/UTC');
+
+//Tell PHPMailer to use SMTP
+$mail->isSMTP();
+
+////Enable SMTP debugging
+// 0 = off (for production use)
+// 1 = client messages
+// 2 = client and server messages
+$mail->SMTPDebug = 2;
+
+//Ask for HTML-friendly debug output
+$mail->Debugoutput = 'html';
+
+//Set the hostname of the mail server
+$mail->Host = 'smtp.gmail.com';
+// use
+// $mail->Host = gethostbyname('smtp.gmail.com');
+// if your network does not support SMTP over IPv6
+//Set the SMTP port number - 587 for authenticated TLS, a.k.a. RFC4409 SMTP submission
+$mail->Port = 587;
+
+//Set the encryption system to use - ssl (deprecated) or tls
+$mail->SMTPSecure = 'tls';
+
+//Whether to use SMTP authentication
+$mail->SMTPAuth = true;
+
+//Username to use for SMTP authentication - use full email address for gmail
+$mail->Username = "bdwilhite@gmail.com";
+
+//Password to use for SMTP authentication
+$mail->Password = "Dreamfullstack1";
+
+//Set who the message is to be sent from
+//$mail->setFrom('from@example.com', 'First Last');
+
+//Set an alternative reply-to address
+//$mail->addReplyTo('replyto@example.com', 'First Last');
+
+//Set who the message is to be sent to
+$mail->addAddress('bdwilhite@gmail.com', 'Hello Brian');
+
+//Set the subject line
+$mail->Subject = 'PHPMailer GMail SMTP test';
+
+//Read an HTML message body from an external file, convert referenced images to embedded,
+//convert HTML into a basic plain-text alternative body
+//$mail->msgHTML(file_get_contents('contents.html'), dirname(__FILE__));
+
+$mail->isHTML(TRUE);
+$mail->Body = '<p>Ready To Rock</p>';
+
+//Replace the plain text body with one created manually
+//$mail->AltBody = 'Ready To Rock!';
+
+//Attach an image file
+//$mail->addAttachment('images/phpmailer_mini.png');
+//send the message, check for errors
+if (!$mail->send()) {
+    echo "Mailer Error: " . $mail->ErrorInfo;
+    echo '<p class="error">Unable to send email. Please try again!</p>';
+} else {
+    echo "Message sent!";
+}
+
+       
+
+   
+  }
+}
+
+/* Uses ajax request for front validation */
+    /* Location: js/contact_me.js */
+    function is_ajax(){
+        return isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest';
+    }  
+
+/* End of file mail.php */
+/* Location: php/email/mail.php */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
